@@ -31,10 +31,10 @@ def control_thread():
         print(left_wheel, right_wheel)
         roomba.write(
             OPCODE_DRIVE_DIRECT
-            + struct.pack("<h", right_wheel)
-            + struct.pack("<h", left_wheel)
+            + struct.pack(">h", right_wheel)
+            + struct.pack(">h", left_wheel)
         )
-        time.sleep(0.05)
+        time.sleep(0.01)
 
 
 def main():
