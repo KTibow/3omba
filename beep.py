@@ -2,7 +2,7 @@ import time
 
 from serial import Serial
 
-from interface import (
+from lib.interface import (
     OPCODE_PLAY_SONG,
     OPCODE_SAFE,
     OPCODE_START,
