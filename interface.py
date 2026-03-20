@@ -2,9 +2,10 @@
 Opcodes for the iRobot Create 2.
 """
 
-from serial import Serial
-from typing import cast
 import struct
+from typing import Sequence, cast
+
+from serial import Serial
 
 UNSIGNED_1 = ">B", 1
 SIGNED_1 = ">b", 1
@@ -37,7 +38,7 @@ PACKETS = {
 }
 
 
-def read_stream(roomba: Serial, packets: list[int]):
+def read_stream(roomba: Serial, packets: Sequence[int]):
     length = 1 + 1 + sum(1 + PACKETS[pid][1] for pid in packets) + 1
     data = roomba.read(length)
     if len(data) < length:
