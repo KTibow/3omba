@@ -28,11 +28,13 @@ def control_thread():
         sensor_data_fixed = sensor_data.get()
         left_wheel = 500 - sensor_data_fixed[3]
         right_wheel = 500 - sensor_data_fixed[0]
+        print(left_wheel, right_wheel)
         roomba.write(
             OPCODE_DRIVE_DIRECT
             + struct.pack("<h", right_wheel)
             + struct.pack("<h", left_wheel)
         )
+        time.sleep(0.05)
 
 
 def main():
