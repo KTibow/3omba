@@ -1,9 +1,11 @@
+import struct
 import threading
 import time
 
 from serial import Serial
 
 from lib.interface import (
+    OPCODE_DRIVE_DIRECT,
     OPCODE_SAFE,
     OPCODE_START,
     OPCODE_STOP,
@@ -18,13 +20,19 @@ roomba.write(OPCODE_START)
 roomba.write(OPCODE_SAFE)
 time.sleep(0.2)
 
-sensor_data = SensorBox()
+sensor_data: SensorBox[list[int]] = SensorBox()
 
 
 def control_thread():
     while True:
-        print("using", sensor_data.get())
-        time.sleep(0.05)
+        sensor_data_fixed = sensor_data.get()
+        left_wheel = 500 - sensor_data_fixed[3]
+        right_wheel = 500 - sensor_data_fixed[0]
+        roomba.write(
+            OPCODE_DRIVE_DIRECT
+            + struct.pack("<h", right_wheel)
+            + struct.pack("<h", left_wheel)
+        )
 
 
 def main():
