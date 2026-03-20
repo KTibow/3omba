@@ -20,6 +20,7 @@ time.sleep(0.2)
 def main():
     roomba.write(OPCODE_STORE_SONG + bytes([0, 3]) + bytes([31, 32, 41, 32, 51, 32]))
     roomba.write(OPCODE_PLAY_SONG + bytes([0]))
+    time.sleep(1.5)
 
 
 try:
