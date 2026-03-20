@@ -28,20 +28,16 @@ def control_thread():
         sensor_data_fixed = sensor_data.get()
         left_wheel = 200
         right_wheel = 200
-        if (sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]) > 100:
-            right_wheel = -200
-        if (sensor_data_fixed[3] + sensor_data_fixed[4] + sensor_data_fixed[5]) > 100:
-            left_wheel = -200
-        # left_wheel -= 3 * (
-        #     sensor_data_fixed[3] + sensor_data_fixed[4] + sensor_data_fixed[5]
-        # )
-        # right_wheel -= 3 * (
-        #     sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]
-        # )
-        # if sensor_data_fixed[6] & 0b00000001:
-        #     left_wheel -= 3 * 300
-        # if sensor_data_fixed[6] & 0b00000010:
-        #     right_wheel -= 3 * 300
+        right_wheel -= 10 * (
+            sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]
+        )
+        left_wheel -= 10 * (
+            sensor_data_fixed[3] + sensor_data_fixed[4] + sensor_data_fixed[5]
+        )
+        if sensor_data_fixed[6] & 0b00000001:
+            left_wheel -= 400
+        if sensor_data_fixed[6] & 0b00000010:
+            right_wheel -= 400
         # print(sensor_data_fixed, left_wheel, right_wheel)
         roomba.write(
             OPCODE_DRIVE_DIRECT
