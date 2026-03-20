@@ -18,7 +18,13 @@ time.sleep(0.2)
 
 
 def main():
-    roomba.write(OPCODE_STORE_SONG + bytes([0, 3]) + bytes([31, 32, 41, 32, 51, 32]))
+    notes = []
+    notes_payload = []
+    for n in range(31, 127, 10):
+        notes.append(n)
+        notes_payload.append(n)
+        notes_payload.append(32)
+    roomba.write(OPCODE_STORE_SONG + bytes([0, len(notes)]) + bytes(notes_payload))
     roomba.write(OPCODE_PLAY_SONG + bytes([0]))
     time.sleep(1.5)
 
