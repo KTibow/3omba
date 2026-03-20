@@ -28,10 +28,10 @@ def control_thread():
         sensor_data_fixed = sensor_data.get()
         left_wheel = 200
         right_wheel = 200
-        right_wheel -= 10 * (
+        right_wheel -= 5 * (
             sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]
         )
-        left_wheel -= 10 * (
+        left_wheel -= 5 * (
             sensor_data_fixed[3] + sensor_data_fixed[4] + sensor_data_fixed[5]
         )
         if sensor_data_fixed[6] & 0b00000001:
@@ -55,10 +55,14 @@ def main():
     thread = threading.Thread(target=control_thread, daemon=True)
 
     while True:
-        readings = read_stream(roomba, PACKETS)
-        sensor_data.put(readings)
-        if not thread.is_alive():
-            thread.start()
+        try:
+            readings = read_stream(roomba, PACKETS)
+            sensor_data.put(readings)
+            if not thread.is_alive():
+                thread.start()
+        except Exception as e:
+            print(e)
+            continue
 
 
 try:
