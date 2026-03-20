@@ -26,8 +26,12 @@ sensor_data: SensorBox[list[int]] = SensorBox()
 def control_thread():
     while True:
         sensor_data_fixed = sensor_data.get()
-        left_wheel = 500 - sensor_data_fixed[3]
-        right_wheel = 500 - sensor_data_fixed[0]
+        left_wheel = 500 - (
+            sensor_data_fixed[3] + sensor_data_fixed[4] + sensor_data_fixed[5]
+        )
+        right_wheel = 500 - (
+            sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]
+        )
         print(left_wheel, right_wheel)
         roomba.write(
             OPCODE_DRIVE_DIRECT
@@ -38,7 +42,7 @@ def control_thread():
 
 
 def main():
-    PACKETS = (46, 48, 49, 51)
+    PACKETS = (46, 47, 48, 49, 50, 51)
     roomba.write(OPCODE_STREAM_SENSORS + bytes((len(PACKETS),)) + bytes(PACKETS))
     roomba.read_all()
 
