@@ -16,6 +16,7 @@ PACKETS = {
     7: UNSIGNED_1,  # Bumps and Wheel Drops
     15: UNSIGNED_1,  # Dirt Detect
     17: UNSIGNED_1,  # Infrared Character
+    18: UNSIGNED_1,  # Buttons
     21: UNSIGNED_1,  # Charging State
     22: UNSIGNED_2,  # Voltage
     23: SIGNED_2,  # Current
