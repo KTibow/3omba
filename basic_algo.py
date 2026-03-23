@@ -36,7 +36,9 @@ def control_thread():
     while True:
         sensor_data_fixed = sensor_data.get()
 
-        buttons_pressed = sensor_data_fixed[7]
+        dirt_detect = sensor_data_fixed[7]
+
+        buttons_pressed = sensor_data_fixed[8]
         if buttons_last_pressed and not buttons_pressed:
             motors_enabled = buttons_last_pressed & 0b00000001
             running = not running
@@ -66,7 +68,13 @@ def control_thread():
         motor_bytes = OPCODE_MOTORS + bytes(
             [0b00000110 if running and motors_enabled else 0]
         )
-        led_bytes = OPCODE_LEDS + bytes([0, 0, 255 if running else 16])
+        led_bytes = OPCODE_LEDS + bytes(
+            [
+                (0b0000001 if dirt_detect else 0) | (0b00000110 if not running else 0),
+                0,
+                255 if running else 16,
+            ]
+        )
         if drive_bytes != last_drive_bytes:
             roomba.write(drive_bytes)
             last_drive_bytes = drive_bytes
@@ -80,7 +88,7 @@ def control_thread():
 
 
 def main():
-    PACKETS = (46, 47, 48, 49, 50, 51, 7, 18)
+    PACKETS = (46, 47, 48, 49, 50, 51, 7, 15, 18)
     roomba.write(OPCODE_STREAM_SENSORS + bytes((len(PACKETS),)) + bytes(PACKETS))
     roomba.read_all()
 
