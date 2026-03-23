@@ -84,7 +84,7 @@ def control_thread():
         if led_bytes != last_led_bytes:
             roomba.write(led_bytes)
             last_led_bytes = led_bytes
-        time.sleep(0.1)
+        time.sleep(0.015)
 
 
 def main():
