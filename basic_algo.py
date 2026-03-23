@@ -24,20 +24,31 @@ sensor_data: SensorBox[list[int]] = SensorBox()
 
 
 def control_thread():
+    running = False
+    buttons_last_pressed = False
     while True:
         sensor_data_fixed = sensor_data.get()
-        left_wheel = 200
-        right_wheel = 200
-        right_wheel -= 5 * (
-            sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]
-        )
-        left_wheel -= 5 * (
-            sensor_data_fixed[3] + sensor_data_fixed[4] + sensor_data_fixed[5]
-        )
-        if sensor_data_fixed[6] & 0b00000001:
-            left_wheel -= 400
-        if sensor_data_fixed[6] & 0b00000010:
-            right_wheel -= 400
+
+        buttons_pressed = sensor_data_fixed[7]
+        if buttons_last_pressed and not buttons_pressed:
+            running = not running
+        buttons_last_pressed = buttons_pressed
+
+        left_wheel = 0
+        right_wheel = 0
+        if running:
+            left_wheel = 200
+            right_wheel = 200
+            right_wheel -= 5 * (
+                sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]
+            )
+            left_wheel -= 5 * (
+                sensor_data_fixed[3] + sensor_data_fixed[4] + sensor_data_fixed[5]
+            )
+            if sensor_data_fixed[6] & 0b00000001:
+                left_wheel -= 400
+            if sensor_data_fixed[6] & 0b00000010:
+                right_wheel -= 400
         # print(sensor_data_fixed, left_wheel, right_wheel)
         roomba.write(
             OPCODE_DRIVE_DIRECT
@@ -48,7 +59,7 @@ def control_thread():
 
 
 def main():
-    PACKETS = (46, 47, 48, 49, 50, 51, 7)
+    PACKETS = (46, 47, 48, 49, 50, 51, 7, 18)
     roomba.write(OPCODE_STREAM_SENSORS + bytes((len(PACKETS),)) + bytes(PACKETS))
     roomba.read_all()
 
