@@ -6,6 +6,8 @@ from serial import Serial
 
 from lib.interface import (
     OPCODE_DRIVE_DIRECT,
+    OPCODE_LEDS,
+    OPCODE_MOTORS,
     OPCODE_SAFE,
     OPCODE_START,
     OPCODE_STOP,
@@ -26,6 +28,10 @@ sensor_data: SensorBox[list[int]] = SensorBox()
 def control_thread():
     running = False
     buttons_last_pressed = False
+
+    last_drive_bytes = b""
+    last_motor_bytes = b""
+    last_led_bytes = b""
     while True:
         sensor_data_fixed = sensor_data.get()
 
@@ -50,11 +56,22 @@ def control_thread():
             if sensor_data_fixed[6] & 0b00000010:
                 right_wheel -= 400
         # print(sensor_data_fixed, left_wheel, right_wheel)
-        roomba.write(
+        drive_bytes = (
             OPCODE_DRIVE_DIRECT
             + struct.pack(">h", right_wheel)
             + struct.pack(">h", left_wheel)
         )
+        motor_bytes = OPCODE_MOTORS + bytes([0b00000110 if running else 0])
+        led_bytes = OPCODE_LEDS + bytes([0, 0, 255 if running else 16])
+        if drive_bytes != last_drive_bytes:
+            roomba.write(drive_bytes)
+            last_drive_bytes = drive_bytes
+        if motor_bytes != last_motor_bytes:
+            roomba.write(motor_bytes)
+            last_motor_bytes = motor_bytes
+        if led_bytes != last_led_bytes:
+            roomba.write(led_bytes)
+            last_led_bytes = led_bytes
         time.sleep(0.1)
 
 
