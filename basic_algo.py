@@ -70,9 +70,9 @@ def control_thread():
         )
         led_bytes = OPCODE_LEDS + bytes(
             [
-                (0b0000001 if dirt_detect else 0) | (0b00000110 if not running else 0),
+                (0b0000001 if dirt_detect else 0) | (0b00000010 if not running else 0),
                 0,
-                255 if running else 16,
+                255 if not running else 16,
             ]
         )
         if drive_bytes != last_drive_bytes:
