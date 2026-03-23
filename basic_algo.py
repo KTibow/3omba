@@ -35,6 +35,7 @@ def control_thread():
     last_led_bytes = b""
     while True:
         sensor_data_fixed = sensor_data.get()
+        print(sensor_data_fixed)
 
         dirt_detect = sensor_data_fixed[7]
 
