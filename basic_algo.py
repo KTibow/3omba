@@ -27,6 +27,7 @@ sensor_data: SensorBox[list[int]] = SensorBox()
 
 def control_thread():
     running = False
+    motors_enabled = True
     buttons_last_pressed = False
 
     last_drive_bytes = b""
@@ -37,6 +38,7 @@ def control_thread():
 
         buttons_pressed = sensor_data_fixed[7]
         if buttons_last_pressed and not buttons_pressed:
+            motors_enabled = buttons_last_pressed & 0b00000001
             running = not running
         buttons_last_pressed = buttons_pressed
 
@@ -61,7 +63,9 @@ def control_thread():
             + struct.pack(">h", right_wheel)
             + struct.pack(">h", left_wheel)
         )
-        motor_bytes = OPCODE_MOTORS + bytes([0b00000110 if running else 0])
+        motor_bytes = OPCODE_MOTORS + bytes(
+            [0b00000110 if running and motors_enabled else 0]
+        )
         led_bytes = OPCODE_LEDS + bytes([0, 0, 255 if running else 16])
         if drive_bytes != last_drive_bytes:
             roomba.write(drive_bytes)
