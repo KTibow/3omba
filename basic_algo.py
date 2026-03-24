@@ -54,14 +54,14 @@ def control_thread():
         buttons_last_pressed = buttons_pressed
 
         bias_metric = (
-            bias_metric * 0.99 + (right_light_bumper / 500 + right_bumper) * 0.01
+            bias_metric * 0.990 + (right_light_bumper / 500 + right_bumper) * 0.001
         )
         print(bias_metric, right_light_bumper, right_bumper)
 
         left_wheel = 0
         right_wheel = 0
         if running:
-            left_wheel = -200 if bias_metric > 0.2 else 200
+            left_wheel = -200 if bias_metric > 0.02 else 200
             right_wheel = 200
             right_wheel -= 5 * left_light_bumper
             left_wheel -= 5 * right_light_bumper
