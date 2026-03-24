@@ -27,7 +27,7 @@ sensor_data: SensorBox[list[int]] = SensorBox()
 
 def control_thread():
     running = False
-    bias_enabled_to = 0
+    bias_metric = 0
     motors_enabled = True
     buttons_last_pressed = False
 
@@ -53,13 +53,15 @@ def control_thread():
             running = not running
         buttons_last_pressed = buttons_pressed
 
-        if right_light_bumper > 100 or right_bumper:
-            bias_enabled_to = time.time() + 5
+        bias_metric = (
+            bias_metric * 0.99 + (right_light_bumper / 100 + right_bumper) * 0.01
+        )
+        print(bias_metric, right_light_bumper, right_bumper)
 
         left_wheel = 0
         right_wheel = 0
         if running:
-            left_wheel = -200 if time.time() < bias_enabled_to else 200
+            left_wheel = -200 if bias_metric > 100 else 200
             right_wheel = 200
             right_wheel -= 5 * left_light_bumper
             left_wheel -= 5 * right_light_bumper
