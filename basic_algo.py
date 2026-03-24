@@ -48,7 +48,7 @@ def control_thread():
         right_wheel = 0
         if running:
             left_wheel = 200
-            right_wheel = 200
+            right_wheel = 100
             right_wheel -= 5 * (
                 sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]
             )
