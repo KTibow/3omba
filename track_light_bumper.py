@@ -39,7 +39,9 @@ def control_thread():
                 bumper_low_range,
             ]
         )
-        digit_bytes = OPCODE_SCHEDULE_DISPLAY_ASCII + str(bumper).encode("utf-8")
+        digit_bytes = OPCODE_SCHEDULE_DISPLAY_ASCII + str(bumper).encode("utf-8").rjust(
+            4, b" "
+        )
         if led_bytes != last_led_bytes:
             roomba.write(led_bytes)
             last_led_bytes = led_bytes
