@@ -9,6 +9,7 @@ from lib.interface import (
     OPCODE_LEDS,
     OPCODE_MOTORS,
     OPCODE_SAFE,
+    OPCODE_SCHEDULE_LEDS,
     OPCODE_START,
     OPCODE_STOP,
     OPCODE_STREAM_SENSORS,
@@ -34,6 +35,7 @@ def control_thread():
     last_drive_bytes = b""
     last_motor_bytes = b""
     last_led_bytes = b""
+    last_schedule_bytes = b""
     while True:
         sensor_data_fixed = sensor_data.get()
 
@@ -83,6 +85,14 @@ def control_thread():
                 255 if not running else 16,
             ]
         )
+        schedule_data_1 = 0
+        schedule_data_1 |= 0b01000000 if sensor_data_fixed[0] > 5 else 0
+        schedule_data_1 |= 0b00100000 if sensor_data_fixed[1] > 5 else 0
+        schedule_data_1 |= 0b00010000 if sensor_data_fixed[2] > 5 else 0
+        schedule_data_1 |= 0b00001000 if sensor_data_fixed[3] > 5 else 0
+        schedule_data_1 |= 0b00000100 if sensor_data_fixed[4] > 5 else 0
+        schedule_data_1 |= 0b00000010 if sensor_data_fixed[5] > 5 else 0
+        schedule_bytes = OPCODE_SCHEDULE_LEDS + bytes([schedule_data_1, 0])
         if drive_bytes != last_drive_bytes:
             roomba.write(drive_bytes)
             last_drive_bytes = drive_bytes
@@ -92,6 +102,9 @@ def control_thread():
         if led_bytes != last_led_bytes:
             roomba.write(led_bytes)
             last_led_bytes = led_bytes
+        if schedule_bytes != last_schedule_bytes:
+            roomba.write(schedule_bytes)
+            last_schedule_bytes = schedule_bytes
         time.sleep(0.015)
 
 
