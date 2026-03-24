@@ -53,7 +53,7 @@ def control_thread():
             running = not running
         buttons_last_pressed = buttons_pressed
 
-        bias_metric = bias_metric * 0.999 + (1 if right_light_bumper > 8 else 0) * 0.001
+        bias_metric = bias_metric * 0.99 + (1 if right_light_bumper > 8 else 0) * 0.01
         print(bias_metric, right_light_bumper)
 
         left_wheel = 0
