@@ -86,12 +86,12 @@ def control_thread():
             ]
         )
         schedule_data_1 = 0
-        schedule_data_1 |= 0b01000000 if sensor_data_fixed[0] > 5 else 0
-        schedule_data_1 |= 0b00100000 if sensor_data_fixed[1] > 5 else 0
-        schedule_data_1 |= 0b00010000 if sensor_data_fixed[2] > 5 else 0
-        schedule_data_1 |= 0b00001000 if sensor_data_fixed[3] > 5 else 0
-        schedule_data_1 |= 0b00000100 if sensor_data_fixed[4] > 5 else 0
-        schedule_data_1 |= 0b00000010 if sensor_data_fixed[5] > 5 else 0
+        schedule_data_1 |= 0b00000010 if sensor_data_fixed[0] > 5 else 0
+        schedule_data_1 |= 0b00000100 if sensor_data_fixed[1] > 5 else 0
+        schedule_data_1 |= 0b00001000 if sensor_data_fixed[2] > 5 else 0
+        schedule_data_1 |= 0b00010000 if sensor_data_fixed[3] > 5 else 0
+        schedule_data_1 |= 0b00100000 if sensor_data_fixed[4] > 5 else 0
+        schedule_data_1 |= 0b01000000 if sensor_data_fixed[5] > 5 else 0
         schedule_bytes = OPCODE_SCHEDULE_LEDS + bytes([schedule_data_1, 0])
         if drive_bytes != last_drive_bytes:
             roomba.write(drive_bytes)
