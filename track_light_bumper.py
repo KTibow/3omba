@@ -29,7 +29,8 @@ def control_thread():
         sensor_data_fixed = sensor_data.get()
         bumper = sensor_data_fixed[0]
         print(bumper)
-        bumper = int(math.log(bumper) * 128)
+        if bumper > 0:
+            bumper = int(math.log(bumper) * 128)
         bumper_low_range = min(bumper, 255)
         bumper_high_range = bumper // 256
         led_bytes = OPCODE_LEDS + bytes(
