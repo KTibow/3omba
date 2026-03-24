@@ -27,6 +27,7 @@ sensor_data: SensorBox[list[int]] = SensorBox()
 
 def control_thread():
     running = False
+    bias_enabled_to = 0
     motors_enabled = True
     buttons_last_pressed = False
 
@@ -36,28 +37,35 @@ def control_thread():
     while True:
         sensor_data_fixed = sensor_data.get()
 
+        left_light_bumper = (
+            sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]
+        )
+        right_light_bumper = (
+            sensor_data_fixed[3] + sensor_data_fixed[4] + sensor_data_fixed[5]
+        )
+        left_bumper = sensor_data_fixed[6] & 0b00000001
+        right_bumper = sensor_data_fixed[6] & 0b00000010
         dirt_detect = sensor_data_fixed[7]
-
         buttons_pressed = sensor_data_fixed[8]
+
         if buttons_last_pressed and not buttons_pressed:
             motors_enabled = buttons_last_pressed & 0b00000001
             running = not running
         buttons_last_pressed = buttons_pressed
 
+        if right_light_bumper > 100 or right_bumper:
+            bias_enabled_to = time.time() + 5
+
         left_wheel = 0
         right_wheel = 0
         if running:
-            left_wheel = 200
-            right_wheel = 100
-            right_wheel -= 5 * (
-                sensor_data_fixed[0] + sensor_data_fixed[1] + sensor_data_fixed[2]
-            )
-            left_wheel -= 5 * (
-                sensor_data_fixed[3] + sensor_data_fixed[4] + sensor_data_fixed[5]
-            )
-            if sensor_data_fixed[6] & 0b00000001:
+            left_wheel = -200 if time.time() < bias_enabled_to else 200
+            right_wheel = 200
+            right_wheel -= 5 * left_light_bumper
+            left_wheel -= 5 * right_light_bumper
+            if right_bumper:
                 left_wheel -= 400
-            if sensor_data_fixed[6] & 0b00000010:
+            if left_bumper:
                 right_wheel -= 400
         # print(sensor_data_fixed, left_wheel, right_wheel)
         drive_bytes = (
