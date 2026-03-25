@@ -13,14 +13,12 @@ from lib.interface import (
     read_stream,
 )
 
-# 1. Setup Serial
 roomba = Serial("/dev/ttyUSB0", 115200, timeout=0.1)
 time.sleep(0.2)
 roomba.write(OPCODE_START)
 roomba.write(OPCODE_SAFE)
 time.sleep(0.2)
 
-# 2. Data containers
 PACKETS = (46, 47, 48, 49, 50, 51)
 labels = ["Left", "Front Left", "Center Left", "Center Right", "Front Right", "Right"]
 
@@ -29,11 +27,9 @@ acc_data = {label: [] for label in labels}
 acc_times = []
 
 try:
-    # 3. Start Streaming and Initiate Movement
     roomba.write(OPCODE_STREAM_SENSORS + bytes((len(PACKETS),)) + bytes(PACKETS))
     roomba.read_all()  # Clear buffer
 
-    # Pack rotation command: Right wheel 100, Left wheel -100
     roomba.write(OPCODE_DRIVE_DIRECT + struct.pack(">h", -100) + struct.pack(">h", 100))
 
     start_time = time.time()
@@ -41,7 +37,6 @@ try:
 
     print(f"Recording for {duration} seconds...")
 
-    # 4. Main Collection Loop (Single Threaded)
     while True:
         elapsed = time.time() - start_time
         if elapsed > duration:
@@ -61,7 +56,6 @@ try:
         # Small sleep to prevent CPU pegging, but keep high enough for sensor freq
         time.sleep(0.015)
 
-    # 5. Stop Roomba immediately after loop
     roomba.write(OPCODE_DRIVE_DIRECT + struct.pack(">h", 0) + struct.pack(">h", 0))
     print("Recording finished. Closing Roomba connection and plotting...")
 
@@ -70,7 +64,6 @@ finally:
     roomba.write(OPCODE_STOP)
     roomba.close()
 
-# 6. Plotting (Boilerplate for 6 datasets)
 plt.figure(figsize=(12, 6))
 
 for label, values in acc_data.items():
