@@ -13,6 +13,8 @@ from lib.interface import (
     read_stream,
 )
 
+input("Go?")
+
 roomba = Serial("/dev/ttyUSB0", 115200, timeout=0.1)
 time.sleep(0.2)
 roomba.write(OPCODE_START)
