@@ -55,9 +55,6 @@ try:
         except Exception as e:
             print(f"Read error: {e}")
 
-        # Small sleep to prevent CPU pegging, but keep high enough for sensor freq
-        time.sleep(0.015)
-
     roomba.write(OPCODE_DRIVE_DIRECT + struct.pack(">h", 0) + struct.pack(">h", 0))
     print("Recording finished. Closing Roomba connection and plotting...")
 
