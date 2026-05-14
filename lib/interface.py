@@ -7,8 +7,10 @@ from typing import Sequence, cast
 
 from serial import Serial
 
+# 1 byte packets
 UNSIGNED_1 = ">B", 1
 SIGNED_1 = ">b", 1
+# 2 byte packets
 UNSIGNED_2 = ">H", 2
 SIGNED_2 = ">h", 2
 
@@ -25,15 +27,15 @@ PACKETS = {
     26: UNSIGNED_2,  # Battery Capacity
     34: UNSIGNED_1,  # Charging Sources Available
     35: UNSIGNED_1,  # OI Mode
-    43: SIGNED_2,
-    44: SIGNED_2,
-    45: UNSIGNED_1,
-    46: UNSIGNED_2,
-    47: UNSIGNED_2,
-    48: UNSIGNED_2,
-    49: UNSIGNED_2,
-    50: UNSIGNED_2,
-    51: UNSIGNED_2,
+    43: SIGNED_2,  # Left Encoder Counts
+    44: SIGNED_2,  # Right Encoder Counts
+    45: UNSIGNED_1,  # Light Bumper
+    46: UNSIGNED_2,  # Light Bumper Left Signal
+    47: UNSIGNED_2,  # Light Bumper Front Left Signal
+    48: UNSIGNED_2,  # Light Bumper Center Left Signal
+    49: UNSIGNED_2,  # Light Bumper Center Right Signal
+    50: UNSIGNED_2,  # Light Bumper Front Right Signal
+    51: UNSIGNED_2,  # Light Bumper Right Signal
     52: UNSIGNED_1,  # Infrared Character Left
     53: UNSIGNED_1,  # Infrared Character Right
 }
