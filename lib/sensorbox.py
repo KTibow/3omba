@@ -5,6 +5,10 @@ T = TypeVar("T")
 
 
 class SensorBox(Generic[T]):
+    """
+    Holds a value so it can be safely used across threads.
+    """
+
     def __init__(self):
         self._value: T = None  # type: ignore
         self._event = threading.Event()
