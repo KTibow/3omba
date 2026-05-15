@@ -101,10 +101,10 @@ def wakeup_thread():
     for n in range(31, 127, 1):
         notes.append(n)
         notes_payload.append(n)
-        notes_payload.append(1)
+        notes_payload.append(2)
     roomba.write(OPCODE_STORE_SONG + bytes([0, len(notes)]) + bytes(notes_payload))
     roomba.write(OPCODE_PLAY_SONG + bytes([0]))
-    time.sleep(len(notes) * 1 / 64)
+    time.sleep(len(notes) * 2 / 64)
     roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
     time.sleep(0.2)
     roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
