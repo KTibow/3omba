@@ -14,30 +14,58 @@ SIGNED_1 = ">b", 1
 UNSIGNED_2 = ">H", 2
 SIGNED_2 = ">h", 2
 
+ID_BUMPS_AND_WHEEL_DROPS = 7
+ID_DIRT_DETECT = 15
+ID_INFRARED_CHARACTER = 17
+
+ID_BUTTONS = 18
+BUTTON_HOUR = 0b00010000
+BUTTON_MINUTE = 0b00001000
+BUTTON_CLEAN = 0b00000001
+
+ID_CHARGING_STATE = 21
+ID_VOLTAGE = 22
+ID_CURRENT = 23
+ID_TEMPERATURE = 24
+ID_BATTERY_CHARGE = 25
+ID_BATTERY_CAPACITY = 26
+ID_CHARGING_SOURCES_AVAILABLE = 34
+ID_OI_MODE = 35
+ID_LEFT_ENCODER_COUNTS = 43
+ID_RIGHT_ENCODER_COUNTS = 44
+ID_LIGHT_BUMPER = 45
+ID_LIGHT_BUMPER_LEFT_SIGNAL = 46
+ID_LIGHT_BUMPER_FRONT_LEFT_SIGNAL = 47
+ID_LIGHT_BUMPER_CENTER_LEFT_SIGNAL = 48
+ID_LIGHT_BUMPER_CENTER_RIGHT_SIGNAL = 49
+ID_LIGHT_BUMPER_FRONT_RIGHT_SIGNAL = 50
+ID_LIGHT_BUMPER_RIGHT_SIGNAL = 51
+ID_INFRARED_CHARACTER_LEFT = 52
+ID_INFRARED_CHARACTER_RIGHT = 53
 PACKETS = {
-    7: UNSIGNED_1,  # Bumps and Wheel Drops
-    15: UNSIGNED_1,  # Dirt Detect
-    17: UNSIGNED_1,  # Infrared Character
-    18: UNSIGNED_1,  # Buttons
-    21: UNSIGNED_1,  # Charging State
-    22: UNSIGNED_2,  # Voltage
-    23: SIGNED_2,  # Current
-    24: SIGNED_1,  # Temperature
-    25: UNSIGNED_2,  # Battery Charge
-    26: UNSIGNED_2,  # Battery Capacity
-    34: UNSIGNED_1,  # Charging Sources Available
-    35: UNSIGNED_1,  # OI Mode
-    43: SIGNED_2,  # Left Encoder Counts
-    44: SIGNED_2,  # Right Encoder Counts
-    45: UNSIGNED_1,  # Light Bumper
-    46: UNSIGNED_2,  # Light Bumper Left Signal
-    47: UNSIGNED_2,  # Light Bumper Front Left Signal
-    48: UNSIGNED_2,  # Light Bumper Center Left Signal
-    49: UNSIGNED_2,  # Light Bumper Center Right Signal
-    50: UNSIGNED_2,  # Light Bumper Front Right Signal
-    51: UNSIGNED_2,  # Light Bumper Right Signal
-    52: UNSIGNED_1,  # Infrared Character Left
-    53: UNSIGNED_1,  # Infrared Character Right
+    ID_BUMPS_AND_WHEEL_DROPS: UNSIGNED_1,
+    ID_DIRT_DETECT: UNSIGNED_1,
+    ID_INFRARED_CHARACTER: UNSIGNED_1,
+    ID_BUTTONS: UNSIGNED_1,
+    ID_CHARGING_STATE: UNSIGNED_1,
+    ID_VOLTAGE: UNSIGNED_2,
+    ID_CURRENT: SIGNED_2,
+    ID_TEMPERATURE: SIGNED_1,
+    ID_BATTERY_CHARGE: UNSIGNED_2,
+    ID_BATTERY_CAPACITY: UNSIGNED_2,
+    ID_CHARGING_SOURCES_AVAILABLE: UNSIGNED_1,
+    ID_OI_MODE: UNSIGNED_1,
+    ID_LEFT_ENCODER_COUNTS: SIGNED_2,
+    ID_RIGHT_ENCODER_COUNTS: SIGNED_2,
+    ID_LIGHT_BUMPER: UNSIGNED_1,
+    ID_LIGHT_BUMPER_LEFT_SIGNAL: UNSIGNED_2,
+    ID_LIGHT_BUMPER_FRONT_LEFT_SIGNAL: UNSIGNED_2,
+    ID_LIGHT_BUMPER_CENTER_LEFT_SIGNAL: UNSIGNED_2,
+    ID_LIGHT_BUMPER_CENTER_RIGHT_SIGNAL: UNSIGNED_2,
+    ID_LIGHT_BUMPER_FRONT_RIGHT_SIGNAL: UNSIGNED_2,
+    ID_LIGHT_BUMPER_RIGHT_SIGNAL: UNSIGNED_2,
+    ID_INFRARED_CHARACTER_LEFT: UNSIGNED_1,
+    ID_INFRARED_CHARACTER_RIGHT: UNSIGNED_1,
 }
 
 
@@ -103,11 +131,11 @@ Mode change: Exits the OI, and the robot will beep.
 OPCODE_BAUD: bytes = (129).to_bytes(1, "big")
 """
 Set the baud rate in bits per second (bps).
-The default baud rate is 115200 bps, but [it can be changed](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=4) to 19200 bps.
+The default baud rate is 115200 bps, but [it can be changed](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=4) to 19200 bps.
 The baud rate is held unless the robot has to be restarted.
 Wait 100ms after sending this command before sending more commands at the new baud rate.
 
-Format: [129, [baud rate](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=8)]
+Format: [129, [baud rate](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=8)]
 Available: if the OI is connected.
 Mode change: Doesn't change mode.
 """
@@ -211,7 +239,7 @@ Mode change: Doesn't change mode.
 OPCODE_DRIVE: bytes = (137).to_bytes(1, "big")
 """
 Control the robot's drive wheels (with speed/turn amount).
-This is a weird/proprietary command, so [check the official docs](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=12).
+This is a weird/proprietary command, so [check the official docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=12).
 Basically, if it's negative, you subtract the value from 65535 (positive is normal).
 
 Format: [137, speed (2 bits, big endian, -500-500), radius (2 bits, big endian, -2000-2000)]
@@ -221,7 +249,7 @@ Mode change: Doesn't change mode.
 OPCODE_DRIVE_DIRECT: bytes = (145).to_bytes(1, "big")
 """
 Control the robot's drive wheels (with mm/s for each wheel).
-This is a weird/proprietary command, so [check the official docs](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=13).
+This is a weird/proprietary command, so [check the official docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=13).
 Basically, if it's negative, you subtract the value from 65535 (positive is normal).
 
 Format: [145, left wheel (2 bits, big endian, -500-500), radius (2 bits, right wheel, -500-500)]
@@ -231,7 +259,7 @@ Mode change: Doesn't change mode.
 OPCODE_DRIVE_PWM: bytes = (146).to_bytes(1, "big")
 """
 Control the robot's drive wheels (with how much power to send to each wheel).
-This is a weird/proprietary command, so [check the official docs](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=13).
+This is a weird/proprietary command, so [check the official docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=13).
 Basically, if it's negative, you subtract the value from 65535 (positive is normal).
 
 Format: [146, left wheel (2 bits, big endian, -255-255), right wheel (2 bits, big endian, -255-255)]
@@ -241,7 +269,7 @@ Mode change: Doesn't change mode.
 OPCODE_MOTORS: bytes = (138).to_bytes(1, "big")
 """
 Toggle the brushes and vacuum.
-The byte sent is a [combination of multiple bits](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=14).
+The byte sent is a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=14).
 
 Format: [138, byte]
 Available: in Safe/Full mode.
@@ -259,7 +287,7 @@ Mode change: Doesn't change mode.
 OPCODE_LEDS: bytes = (139).to_bytes(1, "big")
 """
 Set the LEDs.
-The first data byte sent is a [combination of multiple bits](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=15).
+The first data byte sent is a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=15).
 
 Format: [139, byte, Clean led hue, Clean led brightness]
 Available: in Safe/Full mode.
@@ -268,7 +296,7 @@ Mode change: Doesn't change mode.
 OPCODE_SCHEDULE_LEDS: bytes = (162).to_bytes(1, "big")
 """
 Set the LEDs surrounding the display for the scheduling system.
-The data bytes are a [combination of multiple bits](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=15).
+The data bytes are a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=15).
 
 Format: [162, byte, byte]
 Available: in Safe/Full mode.
@@ -277,16 +305,16 @@ Mode change: Doesn't change mode.
 OPCODE_SCHEDULE_DISPLAY: bytes = (163).to_bytes(1, "big")
 """
 Set the display for the scheduling system.
-The data bytes are a [combination of multiple bits](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=16).
+The data bytes are a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=16).
 
-Format: [162, bytes for display from left to right x4]
+Format: [163, bytes for display from left to right x4]
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
 OPCODE_EMULATE_BUTTONS: bytes = (165).to_bytes(1, "big")
 """
 Push buttons on the robot for 1/6th of a second.
-The data byte is a [combination of multiple bits](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=16).
+The data byte is a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=16).
 
 Format: [165, byte]
 Available: if the OI is connected.
@@ -303,7 +331,7 @@ Mode change: Doesn't change mode.
 OPCODE_STORE_SONG: bytes = (140).to_bytes(1, "big")
 """
 Store a song (up to 4 at a time).
-View the [official note list](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=18).
+View the [official note list](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=18).
 
 Among Us: `roomba.write((140).to_bytes(1, "big") + b"\x00\x0b\x40\x16\x43\x16\x46\x16\x49\x16\x46\x16\x43\x16\x40\x16\x00\x32\x40\x0c\x43\x0c\x40\x0c")`
 
@@ -323,7 +351,7 @@ Mode change: Doesn't change mode.
 
 OPCODE_SEND_SENSOR: bytes = (142).to_bytes(1, "big")
 """
-Request a sensor packet (check [the sensor packet docs](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=22)).
+Request a sensor packet (check [the sensor packet docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=22)).
 
 Format: [142, sensor packet ID]
 Available: if the OI is connected.
@@ -331,7 +359,7 @@ Mode change: Doesn't change mode.
 """
 OPCODE_SEND_SENSORS: bytes = (149).to_bytes(1, "big")
 """
-Request multiple sensor packets (check [the sensor packet docs](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=22)).
+Request multiple sensor packets (check [the sensor packet docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=22)).
 
 Format: [149, sensor packet count, sensor packet ID 1, sensor packet ID 2, etc.]
 Available: if the OI is connected.
@@ -339,8 +367,8 @@ Mode change: Doesn't change mode.
 """
 OPCODE_STREAM_SENSORS: bytes = (148).to_bytes(1, "big")
 """
-Request sensor packets every 15ms (check [the sensor packet docs](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=22)).
-Check the [format of the returned data](https://www.irobot.com/~/media/mainsite/pdfs/about/stem/create/create_2_open_interface_spec.pdf#page=21).
+Request sensor packets every 15ms (check [the sensor packet docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=22)).
+Check the [format of the returned data](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=21).
 
 Format: [148, sensor packet count, sensor packet ID 1, sensor packet ID 2, etc.]
 Available: if the OI is connected.
