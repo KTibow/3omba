@@ -84,12 +84,14 @@ def watch_time():
     if _last_hour != now.hour or _last_minute != now.minute:
         _last_hour = now.hour
         _last_minute = now.minute
+        print(_last_hour, _last_minute, _target_hour, _target_minute)
 
         if _last_hour == _target_hour and _last_minute == _target_minute:
             threading.Thread(target=wakeup_thread, daemon=True).start()
 
 
 def wakeup_thread():
+    print("HI")
     # todo: play wakeup song
     # todo: pulse motors
     # todo: drive around
