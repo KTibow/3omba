@@ -15,6 +15,7 @@ from lib.interface import (
     ID_LIGHT_BUMPER_FRONT_RIGHT_SIGNAL,
     ID_LIGHT_BUMPER_LEFT_SIGNAL,
     ID_LIGHT_BUMPER_RIGHT_SIGNAL,
+    OPCODE_MOTORS,
     OPCODE_PLAY_SONG,
     OPCODE_SAFE,
     OPCODE_SCHEDULE_DISPLAY_ASCII,
@@ -97,12 +98,22 @@ def wakeup_thread():
     # todo: drive around
     notes = []
     notes_payload = []
-    for n in range(31, 127, 10):
+    for n in range(31, 127, 1):
         notes.append(n)
         notes_payload.append(n)
-        notes_payload.append(32)
+        notes_payload.append(1)
     roomba.write(OPCODE_STORE_SONG + bytes([0, len(notes)]) + bytes(notes_payload))
     roomba.write(OPCODE_PLAY_SONG + bytes([0]))
+    time.sleep(len(notes) * 1 / 64)
+    roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
+    time.sleep(0.2)
+    roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
+    time.sleep(0.2)
+    roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
+    time.sleep(0.2)
+    roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
+    time.sleep(0.4)
+    roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
     while True:
         readings = sensor_data.get()
         print("HI", readings)
