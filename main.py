@@ -15,11 +15,13 @@ from lib.interface import (
     ID_LIGHT_BUMPER_FRONT_RIGHT_SIGNAL,
     ID_LIGHT_BUMPER_LEFT_SIGNAL,
     ID_LIGHT_BUMPER_RIGHT_SIGNAL,
+    OPCODE_PLAY_SONG,
     OPCODE_SAFE,
     OPCODE_SCHEDULE_DISPLAY_ASCII,
     OPCODE_SCHEDULE_LEDS,
     OPCODE_START,
     OPCODE_STOP,
+    OPCODE_STORE_SONG,
     OPCODE_STREAM_SENSORS,
     read_stream,
 )
@@ -91,8 +93,17 @@ def wakeup_thread():
     # todo: play wakeup song
     # todo: pulse motors
     # todo: drive around
+    notes = []
+    notes_payload = []
+    for n in range(31, 127, 10):
+        notes.append(n)
+        notes_payload.append(n)
+        notes_payload.append(32)
+    roomba.write(OPCODE_STORE_SONG + bytes([0, len(notes)]) + bytes(notes_payload))
+    roomba.write(OPCODE_PLAY_SONG + bytes([0]))
     while True:
         readings = sensor_data.get()
+        print("HI", readings)
         # todo: check for stop conditions
         time.sleep(0.015)
 
