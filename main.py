@@ -123,18 +123,18 @@ def wakeup_thread():
         notes.append(n)
         notes_payload.append(n)
         notes_payload.append(32)
-    roomba.write(OPCODE_STORE_SONG + bytes([0, len(notes)]) + bytes(notes_payload))
-    roomba.write(OPCODE_PLAY_SONG + bytes([0]))
-    time.sleep(len(notes) * 32 / 64)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
-    time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
-    time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
-    time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
-    time.sleep(0.4)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
+    # roomba.write(OPCODE_STORE_SONG + bytes([0, len(notes)]) + bytes(notes_payload))
+    # roomba.write(OPCODE_PLAY_SONG + bytes([0]))
+    # time.sleep(len(notes) * 32 / 64)
+    # roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
+    # time.sleep(0.2)
+    # roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
+    # time.sleep(0.2)
+    # roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
+    # time.sleep(0.2)
+    # roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
+    # time.sleep(0.4)
+    # roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
     while True:
         readings = sensor_data.get()
 
@@ -146,7 +146,7 @@ def wakeup_thread():
 
         print("HI", readings)
         left_wheel = 500
-        right_wheel = 500
+        right_wheel = 300
         left_light_bumper = readings[2] + readings[3] + readings[4]
         right_light_bumper = readings[5] + readings[6] + readings[7]
         left_wheel -= 5 * right_light_bumper
