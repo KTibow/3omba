@@ -145,9 +145,16 @@ def wakeup_thread():
             break
 
         print("HI", readings)
-        # todo: drive around better
+        left_wheel = 500
+        right_wheel = 500
+        left_light_bumper = readings[2] + readings[3] + readings[4]
+        right_light_bumper = readings[5] + readings[6] + readings[7]
+        left_wheel -= 5 * right_light_bumper
+        right_wheel -= 5 * left_light_bumper
         roomba.write(
-            OPCODE_DRIVE_DIRECT + struct.pack(">h", 100) + struct.pack(">h", 100)
+            OPCODE_DRIVE_DIRECT
+            + struct.pack(">h", left_wheel)
+            + struct.pack(">h", right_wheel)
         )
         time.sleep(0.015)
 
