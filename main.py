@@ -140,8 +140,8 @@ def wakeup_thread():
 
         buttons = readings[0]
         if buttons:  # as in, is *any* button pressed?
-            roomba.write(OPCODE_DRIVE_DIRECT + bytes([0, 0]))
             roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
+            roomba.write(OPCODE_DRIVE_DIRECT + bytes([0, 0, 0, 0]))
             break
 
         left_light_bumper = readings[2] + readings[3] + readings[4]
