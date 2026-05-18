@@ -150,7 +150,7 @@ def wakeup_thread():
         right_bumper = readings[1] & 0b00000010
 
         left_wheel = 500
-        right_wheel = 300
+        right_wheel = 450
         left_wheel -= 5 * right_light_bumper
         right_wheel -= 5 * left_light_bumper
         left_wheel -= 500 * right_bumper
