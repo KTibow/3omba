@@ -1,3 +1,7 @@
+"""
+Home to the SensorBox class.
+"""
+
 import threading
 from typing import Generic, TypeVar
 

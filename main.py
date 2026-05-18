@@ -1,3 +1,27 @@
+"""
+The 3omba alarm clock.
+
+**Part 1: Main thread**
+Infinitely loops these simple, synchronous operations:
+- Read sensor data from the Roomba
+- Increment target hour/minute when hour button/minute button are pressed
+- Display current target hour/minute on Roomba display
+- When the target hour/minute comes around, start wakeup thread
+
+**Part 2: Wakeup thread**
+Starts with an announcement:
+- Play a simple song
+- Pulse the vacuum and brushes on and off
+- Turn on the vacuum and brushes
+
+Then enters evasion mode:
+- If no obstacles detected, goes at max speed (equivalent to 1.1 mph)
+- If walls detected, slows down and turns away for better evasion (and cleaning)
+
+Stops once any button pressed.
+"""
+
+import struct
 import threading
 import time
 from datetime import datetime
@@ -15,6 +39,7 @@ from lib.interface import (
     ID_LIGHT_BUMPER_FRONT_RIGHT_SIGNAL,
     ID_LIGHT_BUMPER_LEFT_SIGNAL,
     ID_LIGHT_BUMPER_RIGHT_SIGNAL,
+    OPCODE_DRIVE_DIRECT,
     OPCODE_MOTORS,
     OPCODE_PLAY_SONG,
     OPCODE_SAFE,
@@ -92,10 +117,6 @@ def watch_time():
 
 
 def wakeup_thread():
-    print("HI")
-    # todo: play wakeup song
-    # todo: pulse motors
-    # todo: drive around
     notes = []
     notes_payload = []
     for n in range(31, 127, 10):
@@ -116,8 +137,18 @@ def wakeup_thread():
     roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
     while True:
         readings = sensor_data.get()
+
+        buttons = readings[0]
+        if buttons:  # as in, is *any* button pressed?
+            roomba.write(OPCODE_DRIVE_DIRECT + bytes([0, 0]))
+            roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
+            break
+
         print("HI", readings)
-        # todo: check for stop conditions
+        # todo: drive around better
+        roomba.write(
+            OPCODE_DRIVE_DIRECT + struct.pack(">h", 100) + struct.pack(">h", 100)
+        )
         time.sleep(0.015)
 
 
