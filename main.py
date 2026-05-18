@@ -153,8 +153,8 @@ def wakeup_thread():
         right_wheel -= 5 * left_light_bumper
         roomba.write(
             OPCODE_DRIVE_DIRECT
-            + struct.pack(">h", left_wheel)
             + struct.pack(">h", right_wheel)
+            + struct.pack(">h", left_wheel)
         )
         time.sleep(0.015)
 
