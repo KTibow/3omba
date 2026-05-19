@@ -118,7 +118,6 @@ def wakeup_thread():
         notes.append(n)
         notes_payload.append(n)
         notes_payload.append(32)
-    roomba.write(OPCODE_SAFE)
     roomba.write(OPCODE_STORE_SONG + bytes([0, len(notes)]) + bytes(notes_payload))
     roomba.write(OPCODE_PLAY_SONG + bytes([0]))
     time.sleep(len(notes) * 32 / 64)
@@ -138,7 +137,6 @@ def wakeup_thread():
         if buttons:  # as in, is *any* button pressed?
             roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
             roomba.write(OPCODE_DRIVE_DIRECT + bytes([0, 0, 0, 0]))
-            roomba.write(OPCODE_START)
             break
 
         left_light_bumper = readings[2] + readings[3] + readings[4]
@@ -199,6 +197,7 @@ def main():
 # Setup
 time.sleep(0.2)
 roomba.write(OPCODE_START)
+roomba.write(OPCODE_SAFE)
 time.sleep(0.2)
 roomba.write(OPCODE_SCHEDULE_LEDS + b"\x00\x01")
 update_display()
