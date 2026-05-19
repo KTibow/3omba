@@ -1,24 +1,5 @@
 """
-The 3omba alarm clock.
-
-**Part 1: Main thread**
-Infinitely loops these simple, synchronous operations:
-- Read sensor data from the Roomba
-- Increment target hour/minute when hour button/minute button are pressed
-- Display current target hour/minute on Roomba display
-- When the target hour/minute comes around, start wakeup thread
-
-**Part 2: Wakeup thread**
-Starts with an announcement:
-- Play a simple song
-- Pulse the vacuum and brushes on and off
-- Turn on the vacuum and brushes
-
-Then enters evasion mode:
-- If no obstacles detected, goes at max speed (equivalent to 1.1 mph)
-- If walls detected, slows down and turns away for better evasion (and cleaning)
-
-Stops once any button pressed.
+The 3omba alarm clock program.
 """
 
 import struct
@@ -117,12 +98,27 @@ def watch_time():
 
 
 def wakeup_thread():
+    """
+    This is the first main component.
+
+    Starts with an announcement:
+    - Play a simple song
+    - Pulse the vacuum and brushes on and off
+    - Turn on the vacuum and brushes
+
+    Then enters evasion mode:
+    - If no obstacles detected, goes at max speed (equivalent to 1.1 mph)
+    - If walls detected, slows down and turns away for better evasion (and cleaning)
+
+    Stops once any button pressed.
+    """
     notes = []
     notes_payload = []
     for n in range(31, 127, 10):
         notes.append(n)
         notes_payload.append(n)
         notes_payload.append(32)
+    roomba.write(OPCODE_SAFE)
     # roomba.write(OPCODE_STORE_SONG + bytes([0, len(notes)]) + bytes(notes_payload))
     # roomba.write(OPCODE_PLAY_SONG + bytes([0]))
     # time.sleep(len(notes) * 32 / 64)
@@ -142,6 +138,7 @@ def wakeup_thread():
         if buttons:  # as in, is *any* button pressed?
             roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
             roomba.write(OPCODE_DRIVE_DIRECT + bytes([0, 0, 0, 0]))
+            roomba.write(OPCODE_START)
             break
 
         left_light_bumper = readings[2] + readings[3] + readings[4]
@@ -164,6 +161,15 @@ def wakeup_thread():
 
 
 def main():
+    """
+    This is the other main component.
+
+    Infinitely loops these simple, synchronous operations:
+    - Read sensor data from the Roomba
+    - Increment target hour/minute when hour button/minute button are pressed
+    - Display current target hour/minute on Roomba display
+    - When the target hour/minute comes around, start wakeup thread
+    """
     PACKETS = (
         ID_BUTTONS,
         ID_BUMPS_AND_WHEEL_DROPS,
@@ -193,7 +199,6 @@ def main():
 # Setup
 time.sleep(0.2)
 roomba.write(OPCODE_START)
-roomba.write(OPCODE_SAFE)
 time.sleep(0.2)
 roomba.write(OPCODE_SCHEDULE_LEDS + b"\x00\x01")
 update_display()
