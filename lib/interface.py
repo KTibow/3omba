@@ -258,7 +258,7 @@ Control the robot's drive wheels (with mm/s for each wheel).
 This is a weird/proprietary command, so [check the official docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=13).
 Basically, if it's negative, you subtract the value from 65535 (positive is normal).
 
-Format: [145, left wheel (2 bits, big endian, -500-500), radius (2 bits, right wheel, -500-500)]
+Format: [145, right wheel (2 bytes, big endian, -500-500), left wheel (2 bytes, big endian, -500-500)]
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
