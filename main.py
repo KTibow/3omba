@@ -78,6 +78,8 @@ def handle_buttons(readings: list[int]):
     if pressed & BUTTON_MINUTE:
         _target_minute = (_target_minute + 1) % 60
 
+    print("now targeting", _target_hour, _target_minute)
+
     _last_buttons = buttons
 
 
@@ -91,7 +93,7 @@ def watch_time():
     if _last_hour != now.hour or _last_minute != now.minute:
         _last_hour = now.hour
         _last_minute = now.minute
-        print(_last_hour, _last_minute, _target_hour, _target_minute)
+        print(_last_hour, _last_minute)
 
         if _last_hour == _target_hour and _last_minute == _target_minute:
             threading.Thread(target=wakeup_thread, daemon=True).start()
