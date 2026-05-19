@@ -71,14 +71,21 @@ def handle_buttons(readings: list[int]):
 
     buttons = readings[0]
     pressed = (buttons ^ _last_buttons) & buttons  # 0→1 transition only
+    should_increment_hour = False
+    should_increment_minute = False
 
     if pressed & BUTTON_HOUR:
-        _target_hour = (_target_hour + 1) % 24
-
+        should_increment_hour = True
     if pressed & BUTTON_MINUTE:
+        should_increment_minute = True
+
+    if should_increment_hour:
+        _target_hour = (_target_hour + 1) % 24
+    if should_increment_minute:
         _target_minute = (_target_minute + 1) % 60
 
-    print("now targeting", _target_hour, _target_minute)
+    if should_increment_hour or should_increment_minute:
+        print("now targeting", _target_hour, _target_minute)
 
     _last_buttons = buttons
 
