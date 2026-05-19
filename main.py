@@ -38,8 +38,8 @@ roomba = Serial("/dev/ttyUSB0", 115200, timeout=0.1)
 sensor_data: SensorBox[list[int]] = SensorBox()
 
 # Global state
-_target_hour = 0
-_target_minute = 0
+_target_hour = datetime.now().hour
+_target_minute = (datetime.now().minute - 1) % 60
 _last_hour = -1
 _last_minute = -1
 _last_buttons = 0
