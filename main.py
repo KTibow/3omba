@@ -154,7 +154,7 @@ def wakeup_thread():
         left_wheel -= 5 * right_light_bumper
         right_wheel -= 5 * left_light_bumper
         left_wheel -= 500 * right_bumper
-        right_bumper -= 500 * left_bumper
+        right_wheel -= 500 * left_bumper
         roomba.write(
             OPCODE_DRIVE_DIRECT
             + struct.pack(">h", right_wheel)
