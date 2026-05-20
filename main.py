@@ -83,10 +83,11 @@ def handle_buttons(readings: list[int]):
         _minute_pressed_for_since_last
 
     buttons = readings[0]
-    pressed = (buttons ^ _last_buttons) & buttons  # 0→1 transition only
     should_increment_hour = False
     should_increment_minute = False
 
+    # Increment on 0→1 transition only
+    pressed = (buttons ^ _last_buttons) & buttons
     if pressed & BUTTON_HOUR:
         should_increment_hour = True
     if pressed & BUTTON_MINUTE:
