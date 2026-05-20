@@ -37,14 +37,18 @@ from lib.sensorbox import SensorBox
 roomba = Serial("/dev/ttyUSB0", 115200, timeout=0.1)
 sensor_data: SensorBox[list[int]] = SensorBox()
 
-# Global state
+# Alarm target state
 _target_hour = datetime.now().hour
 _target_minute = (datetime.now().minute - 1) % 60
-_last_hour = -1
-_last_minute = -1
 _last_buttons = 0
 _last_target_hour = -1
 _last_target_minute = -1
+_hour_pressed_for = 0
+_minute_pressed_for = 0
+
+# Alarm trigger state
+_last_hour = -1
+_last_minute = -1
 
 
 def update_display():
@@ -67,7 +71,12 @@ def handle_buttons(readings: list[int]):
     """
     When the hour/minute buttons are pressed, increment the target hour/minute.
     """
-    global _last_buttons, _target_hour, _target_minute
+    global \
+        _last_buttons, \
+        _target_hour, \
+        _target_minute, \
+        _hour_pressed_for, \
+        _minute_pressed_for
 
     buttons = readings[0]
     pressed = (buttons ^ _last_buttons) & buttons  # 0→1 transition only
@@ -78,6 +87,22 @@ def handle_buttons(readings: list[int]):
         should_increment_hour = True
     if pressed & BUTTON_MINUTE:
         should_increment_minute = True
+
+    if buttons & BUTTON_HOUR:
+        _hour_pressed_for += 1
+    else:
+        _hour_pressed_for = 0
+    if _hour_pressed_for == 20:  # 0.3s
+        should_increment_hour = True
+        _hour_pressed_for = 0
+
+    if buttons & BUTTON_MINUTE:
+        _minute_pressed_for += 1
+    else:
+        _minute_pressed_for = 0
+    if _minute_pressed_for == 20:  # 0.3s
+        should_increment_minute = True
+        _minute_pressed_for = 0
 
     if should_increment_hour:
         _target_hour = (_target_hour + 1) % 24
