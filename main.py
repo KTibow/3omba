@@ -43,8 +43,10 @@ _target_minute = (datetime.now().minute - 1) % 60
 _last_buttons = 0
 _last_target_hour = -1
 _last_target_minute = -1
-_hour_pressed_for = 0
-_minute_pressed_for = 0
+_hour_pressed_for_total = 0
+_hour_pressed_for_since_last = 0
+_minute_pressed_for_total = 0
+_minute_pressed_for_since_last = 0
 
 # Alarm trigger state
 _last_hour = -1
@@ -75,8 +77,10 @@ def handle_buttons(readings: list[int]):
         _last_buttons, \
         _target_hour, \
         _target_minute, \
-        _hour_pressed_for, \
-        _minute_pressed_for
+        _hour_pressed_for_total, \
+        _hour_pressed_for_since_last, \
+        _minute_pressed_for_total, \
+        _minute_pressed_for_since_last
 
     buttons = readings[0]
     pressed = (buttons ^ _last_buttons) & buttons  # 0→1 transition only
@@ -89,20 +93,26 @@ def handle_buttons(readings: list[int]):
         should_increment_minute = True
 
     if buttons & BUTTON_HOUR:
-        _hour_pressed_for += 1
+        _hour_pressed_for_total += 1
+        _hour_pressed_for_since_last += 1
     else:
-        _hour_pressed_for = 0
-    if _hour_pressed_for == 10:  # 0.15s
+        _hour_pressed_for_total = 0
+        _hour_pressed_for_since_last = 0
+    # Increment if held down - start after 0.3s, increment every 0.15s
+    if _hour_pressed_for_total >= 20 and _hour_pressed_for_since_last == 10:
         should_increment_hour = True
-        _hour_pressed_for = 0
+        _hour_pressed_for_since_last = 0
 
     if buttons & BUTTON_MINUTE:
-        _minute_pressed_for += 1
+        _minute_pressed_for_total += 1
+        _minute_pressed_for_since_last += 1
     else:
-        _minute_pressed_for = 0
-    if _minute_pressed_for == 10:  # 0.15s
+        _minute_pressed_for_total = 0
+        _minute_pressed_for_since_last = 0
+    # Same as previous incrementing logic
+    if _minute_pressed_for_total >= 20 and _minute_pressed_for_since_last == 10:
         should_increment_minute = True
-        _minute_pressed_for = 0
+        _minute_pressed_for_since_last = 0
 
     if should_increment_hour:
         _target_hour = (_target_hour + 1) % 24
