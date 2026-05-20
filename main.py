@@ -144,7 +144,7 @@ def watch_time():
 
 def wakeup_thread():
     """
-    This is the first main component.
+    This is the active loop.
 
     Starts with an announcement:
     - Play a simple song
@@ -205,7 +205,7 @@ def wakeup_thread():
 
 def main():
     """
-    This is the other main component.
+    This is the passive loop.
 
     Infinitely loops these simple, synchronous operations:
     - Read sensor data from the Roomba
