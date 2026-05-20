@@ -159,7 +159,7 @@ def wakeup_thread():
     """
     notes = []
     notes_payload = []
-    for n in range(31, 127, 10):
+    for n in range(31, 107, 10):  # from 49 Hz to 3951 Hz
         notes.append(n)
         notes_payload.append(n)
         notes_payload.append(32)
