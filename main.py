@@ -41,12 +41,14 @@ from lib.sensorbox import SensorBox
 roomba = Serial("/dev/ttyUSB0", 115200, timeout=0.1)
 sensor_data: SensorBox[list[int]] = SensorBox()
 
-# Alarm target state
+# Alarm target
 _target_hour = datetime.now().hour
 _target_minute = (datetime.now().minute - 1) % 60
-_last_buttons = 0
 _last_target_hour = -1
 _last_target_minute = -1
+
+# Button state
+_last_buttons = 0
 _hour_pressed_for_total = 0
 _hour_pressed_for_since_last = 0
 _minute_pressed_for_total = 0
@@ -90,7 +92,7 @@ def handle_buttons(readings: list[int]):
     should_increment_hour = False
     should_increment_minute = False
 
-    # Increment on 0→1 transition only
+    # Increment on 0→1 transition
     pressed = (buttons ^ _last_buttons) & buttons
     if pressed & BUTTON_HOUR:
         should_increment_hour = True
@@ -148,7 +150,7 @@ def watch_time():
 
 def wakeup_thread():
     """
-    This is the active loop. See independent comments.
+    This is the active loop. See comments below.
     """
 
     # Generate a wakeup song made of incrementing tones
@@ -180,9 +182,7 @@ def wakeup_thread():
     # Turn on the vacuum and brushes
     roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
 
-    # Evasion mode:
-    # - If no obstacles detected, goes at max speed (equivalent to 1.1 mph)
-    # - If walls detected, slows down and turns away for better evasion (and cleaning)
+    # Evasion mode
     while True:
         readings = sensor_data.get()
 
@@ -197,12 +197,16 @@ def wakeup_thread():
         left_bumper = readings[1] & BWD_BUMP_LEFT
         right_bumper = readings[1] & BWD_BUMP_RIGHT
 
+        # If no obstacles detected, go at max speed (equivalent to 1.1 mph)
         left_wheel = 500
         right_wheel = 450
+        # If walls detected, slow down and turn away for better evasion (and cleaning)
         left_wheel -= 5 * right_light_bumper
         right_wheel -= 5 * left_light_bumper
-        left_wheel -= 500 * right_bumper
-        right_wheel -= 500 * left_bumper
+        if right_bumper:
+            left_wheel -= 500
+        if left_bumper:
+            right_wheel -= 500
         roomba.write(
             OPCODE_DRIVE_DIRECT
             + struct.pack(">h", right_wheel)
@@ -213,13 +217,7 @@ def wakeup_thread():
 
 def main():
     """
-    This is the passive loop.
-
-    Infinitely loops these simple, synchronous operations:
-    - Read sensor data from the Roomba
-    - Increment target hour/minute when hour button/minute button are pressed
-    - Display current target hour/minute on Roomba display
-    - When the target hour/minute comes around, start wakeup thread
+    This is the passive loop. See comments below.
     """
     PACKETS = (
         ID_BUTTONS,
@@ -236,12 +234,17 @@ def main():
     )
     roomba.read_all()  # flush buffers
 
+    # Infinitely loop simple, synchronous operations
     while True:
         try:
+            # Read sensor data from the Roomba
             readings = read_stream(roomba, PACKETS)
             sensor_data.put(readings)
+            # Increment target hour/minute when hour button/minute button are pressed
             handle_buttons(readings)
+            # When the target hour/minute comes around, start wakeup thread
             watch_time()
+            # Display current target hour/minute on Roomba display
             update_display()
         except Exception as e:
             print(e)
