@@ -87,7 +87,7 @@ PACKETS = {
 
 def read_stream(roomba: Serial, packets: Sequence[int]):
     """
-    Get the next reading for specific packets from a currently streaming iRobot Create 2.
+    Parse out an active stream from the Roomba Open Interface.
     """
     length = 1 + 1 + sum(1 + struct.calcsize(PACKETS[pid]) for pid in packets) + 1
     data = roomba.read(length)
