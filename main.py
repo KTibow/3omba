@@ -99,7 +99,7 @@ def handle_buttons(readings: list[int]):
         _hour_pressed_for_total = 0
         _hour_pressed_for_since_last = 0
     # Increment if held down - start after 0.3s, increment every 0.15s
-    if _hour_pressed_for_total >= 20 and _hour_pressed_for_since_last == 10:
+    if _hour_pressed_for_total >= 20 and _hour_pressed_for_since_last >= 10:
         should_increment_hour = True
         _hour_pressed_for_since_last = 0
 
@@ -110,7 +110,7 @@ def handle_buttons(readings: list[int]):
         _minute_pressed_for_total = 0
         _minute_pressed_for_since_last = 0
     # Same as previous incrementing logic
-    if _minute_pressed_for_total >= 20 and _minute_pressed_for_since_last == 10:
+    if _minute_pressed_for_total >= 20 and _minute_pressed_for_since_last >= 10:
         should_increment_minute = True
         _minute_pressed_for_since_last = 0
 
