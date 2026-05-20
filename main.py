@@ -12,6 +12,8 @@ from serial import Serial
 from lib.interface import (
     BUTTON_HOUR,
     BUTTON_MINUTE,
+    BWD_BUMP_LEFT,
+    BWD_BUMP_RIGHT,
     ID_BUMPS_AND_WHEEL_DROPS,
     ID_BUTTONS,
     ID_LIGHT_BUMPER_CENTER_LEFT_SIGNAL,
@@ -20,6 +22,8 @@ from lib.interface import (
     ID_LIGHT_BUMPER_FRONT_RIGHT_SIGNAL,
     ID_LIGHT_BUMPER_LEFT_SIGNAL,
     ID_LIGHT_BUMPER_RIGHT_SIGNAL,
+    MOTORS_MAIN_BRUSH,
+    MOTORS_VACUUM,
     OPCODE_DRIVE_DIRECT,
     OPCODE_MOTORS,
     OPCODE_PLAY_SONG,
@@ -144,50 +148,54 @@ def watch_time():
 
 def wakeup_thread():
     """
-    This is the active loop.
-
-    Starts with an announcement:
-    - Play a simple song
-    - Pulse the vacuum and brushes on and off
-    - Turn on the vacuum and brushes
-
-    Then enters evasion mode:
-    - If no obstacles detected, goes at max speed (equivalent to 1.1 mph)
-    - If walls detected, slows down and turns away for better evasion (and cleaning)
-
-    Stops once any button pressed.
+    This is the active loop. See independent comments.
     """
+
+    # Generate a wakeup song made of incrementing tones
     notes = []
     notes_payload = []
-    for n in range(31, 107, 10):  # from 49 Hz to 3951 Hz
+    for n in range(31, 107, 10):  # maps to 49 Hz to 3951 Hz
         notes.append(n)
         notes_payload.append(n)
         notes_payload.append(32)
-    roomba.write(OPCODE_STORE_SONG + bytes([0, len(notes)]) + bytes(notes_payload))
-    roomba.write(OPCODE_PLAY_SONG + bytes([0]))
+
+    # Play wakeup song
+    SONG_NUMBER = 0
+    roomba.write(
+        OPCODE_STORE_SONG + bytes([SONG_NUMBER, len(notes)]) + bytes(notes_payload)
+    )
+    roomba.write(OPCODE_PLAY_SONG + bytes([SONG_NUMBER]))
     time.sleep(len(notes) * 32 / 64)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
+
+    # Pulse the vacuum and brush on and off
+    ACTIVATE_MOTORS = MOTORS_VACUUM | MOTORS_MAIN_BRUSH
+    roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
     time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
+    roomba.write(OPCODE_MOTORS + bytes([0]))
     time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
+    roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
     time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
+    roomba.write(OPCODE_MOTORS + bytes([0]))
     time.sleep(0.4)
-    roomba.write(OPCODE_MOTORS + bytes([0b00000110]))
+    # Turn on the vacuum and brushes
+    roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
+
+    # Evasion mode:
+    # - If no obstacles detected, goes at max speed (equivalent to 1.1 mph)
+    # - If walls detected, slows down and turns away for better evasion (and cleaning)
     while True:
         readings = sensor_data.get()
 
         buttons = readings[0]
-        if buttons:  # as in, is *any* button pressed?
-            roomba.write(OPCODE_MOTORS + bytes([0b00000000]))
+        if buttons:  # is *any* button pressed? then stop
+            roomba.write(OPCODE_MOTORS + bytes([0]))
             roomba.write(OPCODE_DRIVE_DIRECT + bytes([0, 0, 0, 0]))
             break
 
         left_light_bumper = readings[2] + readings[3] + readings[4]
         right_light_bumper = readings[5] + readings[6] + readings[7]
-        left_bumper = readings[1] & 0b00000001
-        right_bumper = readings[1] & 0b00000010
+        left_bumper = readings[1] & BWD_BUMP_LEFT
+        right_bumper = readings[1] & BWD_BUMP_RIGHT
 
         left_wheel = 500
         right_wheel = 450
