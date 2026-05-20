@@ -339,7 +339,7 @@ OPCODE_STORE_SONG: bytes = (140).to_bytes(1, "big")
 Store a song (up to 4 at a time).
 View the [official note list](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=18).
 
-Among Us: `roomba.write((140).to_bytes(1, "big") + b"\x00\x0b\x40\x16\x43\x16\x46\x16\x49\x16\x46\x16\x43\x16\x40\x16\x00\x32\x40\x0c\x43\x0c\x40\x0c")`
+Among Us: `roomba.write(OPCODE_STORE_SONG + b"\x00\x0b\x40\x16\x43\x16\x46\x16\x49\x16\x46\x16\x43\x16\x40\x16\x00\x32\x40\x0c\x43\x0c\x40\x0c")`
 
 Format: [140, song number (0-3), song note count (1-16), note 1 tone, note 1 length, etc.]
 Available: if the OI is connected.
