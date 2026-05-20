@@ -92,6 +92,7 @@ def handle_buttons(readings: list[int]):
         _hour_pressed_for += 1
     else:
         _hour_pressed_for = 0
+    print(_hour_pressed_for)
     if _hour_pressed_for == 20:  # 0.3s
         should_increment_hour = True
         _hour_pressed_for = 0
@@ -100,6 +101,7 @@ def handle_buttons(readings: list[int]):
         _minute_pressed_for += 1
     else:
         _minute_pressed_for = 0
+    print(_minute_pressed_for)
     if _minute_pressed_for == 20:  # 0.3s
         should_increment_minute = True
         _minute_pressed_for = 0
