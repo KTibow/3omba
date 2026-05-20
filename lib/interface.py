@@ -7,12 +7,11 @@ from typing import Sequence, cast
 
 from serial import Serial
 
-# 1 byte packets
-UNSIGNED_1 = ">B", 1
-SIGNED_1 = ">b", 1
-# 2 byte packets
-UNSIGNED_2 = ">H", 2
-SIGNED_2 = ">h", 2
+# Packets
+UNSIGNED_1 = ">B"
+SIGNED_1 = ">b"
+UNSIGNED_2 = ">H"
+SIGNED_2 = ">h"
 
 # fmt: off
 BUTTON_CLOCK    = 0b10000000
@@ -90,32 +89,34 @@ def read_stream(roomba: Serial, packets: Sequence[int]):
     """
     Get the next reading for specific packets from a currently streaming iRobot Create 2.
     """
-    length = 1 + 1 + sum(1 + PACKETS[pid][1] for pid in packets) + 1
+    length = 1 + 1 + sum(1 + struct.calcsize(PACKETS[pid]) for pid in packets) + 1
     data = roomba.read(length)
     if len(data) < length:
         raise ValueError(f"Need {length}b, got {len(data)}b")
 
     header = data[0]
     n_bytes = data[1]
-    packet_data = list(data[2:-1])
+    remaining_data = list(data[2:-1])
     checksum = data[-1]
     if header != 19:
         roomba.reset_input_buffer()
         raise ValueError(f"Need 19, got {header}")
-    assert n_bytes == len(packet_data)
-    assert (header + n_bytes + sum(packet_data) + checksum) & 0xFF == 0
+    assert n_bytes == len(remaining_data)
+    assert (header + n_bytes + sum(remaining_data) + checksum) & 0xFF == 0
 
     readings: list[int] = []
     for packet_id in packets:
-        fmt, size = PACKETS[packet_id]
+        fmt = PACKETS[packet_id]
+        size = struct.calcsize(fmt)
 
-        pid = packet_data.pop(0)
-        if pid != packet_id:
-            raise ValueError(f"Need {packet_id}, got {pid}")
-        if len(packet_data) < size:
-            raise ValueError(f"Need {size}b, got {len(packet_data)}b")
-        data_bytes = [packet_data.pop(0) for _ in range(size)]
-        value = cast(int, struct.unpack(fmt, bytes(data_bytes))[0])
+        returned_packet_id = remaining_data.pop(0)
+        if returned_packet_id != packet_id:
+            raise ValueError(f"Need {packet_id}, got {returned_packet_id}")
+        if len(remaining_data) < size:
+            raise ValueError(f"Need {size}b, got {len(remaining_data)}b")
+
+        returned_data = [remaining_data.pop(0) for _ in range(size)]
+        value = cast(int, struct.unpack(fmt, bytes(returned_data))[0])
         readings.append(value)
     return readings
 
