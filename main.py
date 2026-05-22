@@ -161,13 +161,14 @@ def wakeup_thread():
 
     # Pulse the vacuum and brush on and off
     ACTIVATE_MOTORS = MOTORS_VACUUM | MOTORS_MAIN_BRUSH
+    DEACTIVATE_MOTORS = 0
     roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
     time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([0]))
+    roomba.write(OPCODE_MOTORS + bytes([DEACTIVATE_MOTORS]))
     time.sleep(0.2)
     roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
     time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([0]))
+    roomba.write(OPCODE_MOTORS + bytes([DEACTIVATE_MOTORS]))
     time.sleep(0.4)
     # Turn on the vacuum and brushes
     roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
@@ -178,7 +179,7 @@ def wakeup_thread():
 
         buttons = readings[0]
         if buttons:  # is *any* button pressed? then stop
-            roomba.write(OPCODE_MOTORS + bytes([0]))
+            roomba.write(OPCODE_MOTORS + bytes([DEACTIVATE_MOTORS]))
             roomba.write(OPCODE_DRIVE_DIRECT + bytes([0, 0, 0, 0]))
             break
 
