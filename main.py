@@ -60,10 +60,7 @@ _last_hour = -1
 _last_minute = -1
 
 
-def update_display():
-    """
-    Sync the target hour and minute to the Roomba display.
-    """
+def display_target_time_on_display():
     global _last_target_hour, _last_target_minute
 
     if _target_hour == _last_target_hour and _target_minute == _last_target_minute:
@@ -76,10 +73,7 @@ def update_display():
     roomba.write(OPCODE_SCHEDULE_DISPLAY_ASCII + chars)
 
 
-def handle_buttons(readings: list[int]):
-    """
-    When the hour/minute buttons are pressed, increment the target hour/minute.
-    """
+def update_target_time(buttons: int):
     global \
         _last_buttons, \
         _target_hour, \
@@ -89,7 +83,6 @@ def handle_buttons(readings: list[int]):
         _minute_pressed_for_total, \
         _minute_pressed_for_since_last
 
-    buttons = readings[0]
     should_increment_hour = False
     should_increment_minute = False
 
@@ -133,10 +126,7 @@ def handle_buttons(readings: list[int]):
     _last_buttons = buttons
 
 
-def watch_time():
-    """
-    Start the wakeup thread when the target time is hit.
-    """
+def start_wakeup_at_target_time():
     global _last_hour, _last_minute
 
     now = datetime.now()
@@ -237,15 +227,11 @@ def main():
     # Infinitely loop simple, synchronous operations
     while True:
         try:
-            # Read sensor data from the Roomba
             readings = read_stream(roomba, PACKETS)
             sensor_data.put(readings)
-            # Increment target hour/minute when hour button/minute button are pressed
-            handle_buttons(readings)
-            # When the target hour/minute comes around, start wakeup thread
-            watch_time()
-            # Display current target hour/minute on Roomba display
-            update_display()
+            update_target_time(readings[0])
+            start_wakeup_at_target_time()
+            display_target_time_on_display()
         except Exception as e:
             print(e)
 
@@ -256,7 +242,7 @@ roomba.write(OPCODE_START)
 roomba.write(OPCODE_SAFE)
 time.sleep(0.2)
 roomba.write(OPCODE_SCHEDULE_LEDS + b"\x00\x01")
-update_display()
+display_target_time_on_display()
 
 try:
     main()
