@@ -14,6 +14,7 @@ from lib.interface import (
     BUTTON_MINUTE,
     BWD_BUMP_LEFT,
     BWD_BUMP_RIGHT,
+    DOUBLE_UNSIGNED_1,
     ID_BUMPS_AND_WHEEL_DROPS,
     ID_BUTTONS,
     ID_LIGHT_BUMPER_CENTER_LEFT_SIGNAL,
@@ -34,7 +35,9 @@ from lib.interface import (
     OPCODE_STOP,
     OPCODE_STORE_SONG,
     OPCODE_STREAM_SENSORS,
+    SCHED_COLON,
     SIGNED_2,
+    UNSIGNED_1,
     read_stream,
 )
 from lib.sensorbox import SensorBox
@@ -155,24 +158,26 @@ def wakeup_thread():
     # Play wakeup song
     SONG_NUMBER = 0
     roomba.write(
-        OPCODE_STORE_SONG + bytes([SONG_NUMBER, len(notes)]) + bytes(notes_payload)
+        OPCODE_STORE_SONG
+        + struct.pack(DOUBLE_UNSIGNED_1, SONG_NUMBER, len(notes))
+        + bytes(notes_payload)
     )
-    roomba.write(OPCODE_PLAY_SONG + bytes([SONG_NUMBER]))
+    roomba.write(OPCODE_PLAY_SONG + struct.pack(UNSIGNED_1, SONG_NUMBER))
     time.sleep(len(notes) * NOTE_LENGTH_64TH / 64)
 
     # Pulse the vacuum and brush on and off
-    ACTIVATE_MOTORS = MOTORS_VACUUM | MOTORS_MAIN_BRUSH
-    DEACTIVATE_MOTORS = 0
-    roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
+    ACTIVATE_MOTORS_BYTES = struct.pack(UNSIGNED_1, MOTORS_VACUUM | MOTORS_MAIN_BRUSH)
+    DEACTIVATE_MOTORS_BYTES = struct.pack(UNSIGNED_1, 0)
+    roomba.write(OPCODE_MOTORS + ACTIVATE_MOTORS_BYTES)
     time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([DEACTIVATE_MOTORS]))
+    roomba.write(OPCODE_MOTORS + DEACTIVATE_MOTORS_BYTES)
     time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
+    roomba.write(OPCODE_MOTORS + ACTIVATE_MOTORS_BYTES)
     time.sleep(0.2)
-    roomba.write(OPCODE_MOTORS + bytes([DEACTIVATE_MOTORS]))
+    roomba.write(OPCODE_MOTORS + DEACTIVATE_MOTORS_BYTES)
     time.sleep(0.4)
     # Turn on the vacuum and brushes
-    roomba.write(OPCODE_MOTORS + bytes([ACTIVATE_MOTORS]))
+    roomba.write(OPCODE_MOTORS + ACTIVATE_MOTORS_BYTES)
 
     # Evasion mode
     while True:
@@ -180,8 +185,12 @@ def wakeup_thread():
 
         buttons = readings[0]
         if buttons:  # is *any* button pressed? then stop
-            roomba.write(OPCODE_MOTORS + bytes([DEACTIVATE_MOTORS]))
-            roomba.write(OPCODE_DRIVE_DIRECT + bytes([0, 0, 0, 0]))
+            roomba.write(OPCODE_MOTORS + DEACTIVATE_MOTORS_BYTES)
+            roomba.write(
+                OPCODE_DRIVE_DIRECT
+                + struct.pack(SIGNED_2, 0)
+                + struct.pack(SIGNED_2, 0)
+            )
             break
 
         left_light_bumper = readings[2] + readings[3] + readings[4]
@@ -221,7 +230,9 @@ def main():
         ID_LIGHT_BUMPER_FRONT_RIGHT_SIGNAL,
         ID_LIGHT_BUMPER_RIGHT_SIGNAL,
     )
-    roomba.write(OPCODE_STREAM_SENSORS + bytes([len(PACKETS)]) + bytes(PACKETS))
+    roomba.write(
+        OPCODE_STREAM_SENSORS + struct.pack(UNSIGNED_1, len(PACKETS)) + bytes(PACKETS)
+    )
     roomba.read_all()  # flush buffers
 
     # Infinitely loop simple, synchronous operations
@@ -241,7 +252,7 @@ time.sleep(0.2)
 roomba.write(OPCODE_START)
 roomba.write(OPCODE_SAFE)
 time.sleep(0.2)
-roomba.write(OPCODE_SCHEDULE_LEDS + b"\x00\x01")
+roomba.write(OPCODE_SCHEDULE_LEDS + struct.pack(DOUBLE_UNSIGNED_1, 0, SCHED_COLON))
 display_target_time_on_display()
 
 try:
