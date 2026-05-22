@@ -34,6 +34,7 @@ from lib.interface import (
     OPCODE_STOP,
     OPCODE_STORE_SONG,
     OPCODE_STREAM_SENSORS,
+    SIGNED_2,
     read_stream,
 )
 from lib.sensorbox import SensorBox
@@ -208,8 +209,8 @@ def wakeup_thread():
             right_wheel -= 500
         roomba.write(
             OPCODE_DRIVE_DIRECT
-            + struct.pack(">h", right_wheel)
-            + struct.pack(">h", left_wheel)
+            + struct.pack(SIGNED_2, right_wheel)
+            + struct.pack(SIGNED_2, left_wheel)
         )
         time.sleep(0.015)
 
