@@ -14,7 +14,6 @@ from lib.interface import (
     BUTTON_MINUTE,
     BWD_BUMP_LEFT,
     BWD_BUMP_RIGHT,
-    DOUBLE_UNSIGNED_1,
     ID_BUMPS_AND_WHEEL_DROPS,
     ID_BUTTONS,
     ID_LIGHT_BUMPER_CENTER_LEFT_SIGNAL,
@@ -156,13 +155,14 @@ def wakeup_thread():
         notes_payload.append(NOTE_LENGTH_64TH)
 
     # Play wakeup song
-    SONG_NUMBER = 0
+    SONG_NUMBER_BYTES = struct.pack(UNSIGNED_1, 0)
     roomba.write(
         OPCODE_STORE_SONG
-        + struct.pack(DOUBLE_UNSIGNED_1, SONG_NUMBER, len(notes))
+        + SONG_NUMBER_BYTES
+        + struct.pack(UNSIGNED_1, len(notes))
         + bytes(notes_payload)
     )
-    roomba.write(OPCODE_PLAY_SONG + struct.pack(UNSIGNED_1, SONG_NUMBER))
+    roomba.write(OPCODE_PLAY_SONG + SONG_NUMBER_BYTES)
     time.sleep(len(notes) * NOTE_LENGTH_64TH / 64)
 
     # Pulse the vacuum and brush on and off
@@ -252,7 +252,11 @@ time.sleep(0.2)
 roomba.write(OPCODE_START)
 roomba.write(OPCODE_SAFE)
 time.sleep(0.2)
-roomba.write(OPCODE_SCHEDULE_LEDS + struct.pack(DOUBLE_UNSIGNED_1, 0, SCHED_COLON))
+roomba.write(
+    OPCODE_SCHEDULE_LEDS
+    + struct.pack(UNSIGNED_1, 0)
+    + struct.pack(UNSIGNED_1, SCHED_COLON)
+)
 display_target_time_on_display()
 
 try:

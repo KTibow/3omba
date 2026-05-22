@@ -9,7 +9,6 @@ from serial import Serial
 
 # Packets
 UNSIGNED_1 = ">B"
-DOUBLE_UNSIGNED_1 = ">BB"
 SIGNED_1 = ">b"
 UNSIGNED_2 = ">H"
 SIGNED_2 = ">h"
