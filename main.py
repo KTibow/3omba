@@ -219,9 +219,7 @@ def main():
         ID_LIGHT_BUMPER_FRONT_RIGHT_SIGNAL,
         ID_LIGHT_BUMPER_RIGHT_SIGNAL,
     )
-    roomba.write(
-        OPCODE_STREAM_SENSORS + len(PACKETS).to_bytes(1, "big") + bytes(PACKETS)
-    )
+    roomba.write(OPCODE_STREAM_SENSORS + bytes([len(PACKETS)]) + bytes(PACKETS))
     roomba.read_all()  # flush buffers
 
     # Infinitely loop simple, synchronous operations

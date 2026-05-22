@@ -121,7 +121,7 @@ def read_stream(roomba: Serial, packets: Sequence[int]):
     return readings
 
 
-OPCODE_START: bytes = (128).to_bytes(1, "big")
+OPCODE_START: bytes = struct.pack(UNSIGNED_1, 128)
 """
 Start the OI. Send it before any other commands.
 If the robot's currently in another mode, sets it to Passive mode.
@@ -130,7 +130,7 @@ Format: [128]
 Available: Always available.
 Mode change: Sets mode to Passive, and the robot will beep.
 """
-OPCODE_RESET: bytes = (7).to_bytes(1, "big")
+OPCODE_RESET: bytes = struct.pack(UNSIGNED_1, 7)
 """
 Reset the robot. Equivalent to removing and reinserting the battery.
 
@@ -138,7 +138,7 @@ Format: [7]
 Available: Always available.
 Mode change: Exits the OI, and the robot will make a tune when it's done.
 """
-OPCODE_STOP: bytes = (173).to_bytes(1, "big")
+OPCODE_STOP: bytes = struct.pack(UNSIGNED_1, 173)
 """
 Stop the OI. Streams will stop, and commands won't work.
 
@@ -146,7 +146,7 @@ Format: [173]
 Available: if the OI is connected.
 Mode change: Exits the OI, and the robot will beep.
 """
-OPCODE_BAUD: bytes = (129).to_bytes(1, "big")
+OPCODE_BAUD: bytes = struct.pack(UNSIGNED_1, 129)
 """
 Set the baud rate in bits per second (bps).
 The default baud rate is 115200 bps, but [it can be changed](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=4) to 19200 bps.
@@ -159,7 +159,7 @@ Mode change: Doesn't change mode.
 """
 
 
-OPCODE_SAFE: bytes = (131).to_bytes(1, "big")
+OPCODE_SAFE: bytes = struct.pack(UNSIGNED_1, 131)
 """
 Put the robot in safe mode.
 This allows you to control the robot, but it will exit if any problem is detected.
@@ -169,7 +169,7 @@ Format: [131]
 Available: if the OI is connected.
 Mode change: Changes mode to Safe.
 """
-OPCODE_FULL: bytes = (132).to_bytes(1, "big")
+OPCODE_FULL: bytes = struct.pack(UNSIGNED_1, 132)
 """
 Put the robot in full mode.
 This allows you to control the robot with safety features turned off.
@@ -180,7 +180,7 @@ Mode change: Changes mode to Full.
 """
 
 
-OPCODE_CLEAN: bytes = (135).to_bytes(1, "big")
+OPCODE_CLEAN: bytes = struct.pack(UNSIGNED_1, 135)
 """
 Start a normal cleaning cycle. Will pause current cycle if any.
 
@@ -188,7 +188,7 @@ Format: [135]
 Available: if the OI is connected.
 Mode change: Changes mode to Passive.
 """
-OPCODE_SPOT: bytes = (134).to_bytes(1, "big")
+OPCODE_SPOT: bytes = struct.pack(UNSIGNED_1, 134)
 """
 Start a spot cleaning cycle. Will pause current cycle if any.
 
@@ -196,7 +196,7 @@ Format: [134]
 Available: if the OI is connected.
 Mode change: Changes mode to Passive.
 """
-OPCODE_DOCK: bytes = (143).to_bytes(1, "big")
+OPCODE_DOCK: bytes = struct.pack(UNSIGNED_1, 143)
 """
 Tell the robot to go around until it sees the dock, then to drive onto it. Will pause current cycle if present.
 
@@ -204,7 +204,7 @@ Format: [143]
 Available: if the OI is connected.
 Mode change: Changes mode to Passive.
 """
-OPCODE_POWER: bytes = (133).to_bytes(1, "big")
+OPCODE_POWER: bytes = struct.pack(UNSIGNED_1, 133)
 """
 Turn off the robot.
 
@@ -212,7 +212,7 @@ Format: [133]
 Available: if the OI is connected.
 Mode change: Exits the OI.
 """
-OPCODE_SCHEDULE: bytes = (167).to_bytes(1, "big")
+OPCODE_SCHEDULE: bytes = struct.pack(UNSIGNED_1, 167)
 """
 Set the cleaning schedule.
 If the robot is already in the schedule/clock UX, the command doesn't work.
@@ -232,7 +232,7 @@ Format: [167, [some kind of checksum](http://www.robotreviews.com/chat/viewtopic
 Available: if the OI is connected.
 Mode change: Doesn't change mode.
 """
-OPCODE_CLOCK: bytes = (168).to_bytes(1, "big")
+OPCODE_CLOCK: bytes = struct.pack(UNSIGNED_1, 168)
 """
 Set the time.
 If the robot is already in the schedule/clock UX, the command doesn't work.
@@ -254,7 +254,7 @@ Mode change: Doesn't change mode.
 """
 
 
-OPCODE_DRIVE: bytes = (137).to_bytes(1, "big")
+OPCODE_DRIVE: bytes = struct.pack(UNSIGNED_1, 137)
 """
 Control the robot's drive wheels (with speed/turn amount).
 This is a weird/proprietary command, so [check the official docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=12).
@@ -264,7 +264,7 @@ Format: [137, speed (2 bits, big endian, -500-500), radius (2 bits, big endian, 
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
-OPCODE_DRIVE_DIRECT: bytes = (145).to_bytes(1, "big")
+OPCODE_DRIVE_DIRECT: bytes = struct.pack(UNSIGNED_1, 145)
 """
 Control the robot's drive wheels (with mm/s for each wheel).
 This is a weird/proprietary command, so [check the official docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=13).
@@ -274,7 +274,7 @@ Format: [145, right wheel (2 bytes, big endian, -500-500), left wheel (2 bytes, 
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
-OPCODE_DRIVE_PWM: bytes = (146).to_bytes(1, "big")
+OPCODE_DRIVE_PWM: bytes = struct.pack(UNSIGNED_1, 146)
 """
 Control the robot's drive wheels (with how much power to send to each wheel).
 This is a weird/proprietary command, so [check the official docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=13).
@@ -284,7 +284,7 @@ Format: [146, left wheel (2 bits, big endian, -255-255), right wheel (2 bits, bi
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
-OPCODE_MOTORS: bytes = (138).to_bytes(1, "big")
+OPCODE_MOTORS: bytes = struct.pack(UNSIGNED_1, 138)
 """
 Toggle the brushes and vacuum.
 The byte sent is a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=14).
@@ -293,7 +293,7 @@ Format: [138, byte]
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
-OPCODE_MOTORS_PWM: bytes = (144).to_bytes(1, "big")
+OPCODE_MOTORS_PWM: bytes = struct.pack(UNSIGNED_1, 144)
 """
 Set the power of the brushes and vacuum.
 Basically, if it's negative, you subtract the value from 255 (positive is normal).
@@ -302,7 +302,7 @@ Format: [144, main brush (-127-127), side brush (-127-127), vacuum (0-127)]
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
-OPCODE_LEDS: bytes = (139).to_bytes(1, "big")
+OPCODE_LEDS: bytes = struct.pack(UNSIGNED_1, 139)
 """
 Set the LEDs.
 The first data byte sent is a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=15).
@@ -311,7 +311,7 @@ Format: [139, byte, Clean led hue, Clean led brightness]
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
-OPCODE_SCHEDULE_LEDS: bytes = (162).to_bytes(1, "big")
+OPCODE_SCHEDULE_LEDS: bytes = struct.pack(UNSIGNED_1, 162)
 """
 Set the LEDs surrounding the display for the scheduling system.
 The data bytes are a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=15).
@@ -320,7 +320,7 @@ Format: [162, byte, byte]
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
-OPCODE_SCHEDULE_DISPLAY: bytes = (163).to_bytes(1, "big")
+OPCODE_SCHEDULE_DISPLAY: bytes = struct.pack(UNSIGNED_1, 163)
 """
 Set the display for the scheduling system.
 The data bytes are a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=16).
@@ -329,7 +329,7 @@ Format: [163, bytes for display from left to right x4]
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
-OPCODE_EMULATE_BUTTONS: bytes = (165).to_bytes(1, "big")
+OPCODE_EMULATE_BUTTONS: bytes = struct.pack(UNSIGNED_1, 165)
 """
 Push buttons on the robot for 1/6th of a second.
 The data byte is a [combination of multiple bits](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=16).
@@ -338,7 +338,7 @@ Format: [165, byte]
 Available: if the OI is connected.
 Mode change: Doesn't change mode.
 """
-OPCODE_SCHEDULE_DISPLAY_ASCII: bytes = (164).to_bytes(1, "big")
+OPCODE_SCHEDULE_DISPLAY_ASCII: bytes = struct.pack(UNSIGNED_1, 164)
 """
 Set the display for the scheduling system with ASCII characters.
 
@@ -346,7 +346,7 @@ Format: [164, characters for display from left to right x4]
 Available: in Safe/Full mode.
 Mode change: Doesn't change mode.
 """
-OPCODE_STORE_SONG: bytes = (140).to_bytes(1, "big")
+OPCODE_STORE_SONG: bytes = struct.pack(UNSIGNED_1, 140)
 """
 Store a song (up to 4 at a time).
 View the [official note list](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=18).
@@ -357,7 +357,7 @@ Format: [140, song number (0-3), song note count (1-16), note 1 tone, note 1 len
 Available: if the OI is connected.
 Mode change: Doesn't change mode.
 """
-OPCODE_PLAY_SONG: bytes = (141).to_bytes(1, "big")
+OPCODE_PLAY_SONG: bytes = struct.pack(UNSIGNED_1, 141)
 """
 Play a song.
 
@@ -367,7 +367,7 @@ Mode change: Doesn't change mode.
 """
 
 
-OPCODE_SEND_SENSOR: bytes = (142).to_bytes(1, "big")
+OPCODE_SEND_SENSOR: bytes = struct.pack(UNSIGNED_1, 142)
 """
 Request a sensor packet (check [the sensor packet docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=22)).
 
@@ -375,7 +375,7 @@ Format: [142, sensor packet ID]
 Available: if the OI is connected.
 Mode change: Doesn't change mode.
 """
-OPCODE_SEND_SENSORS: bytes = (149).to_bytes(1, "big")
+OPCODE_SEND_SENSORS: bytes = struct.pack(UNSIGNED_1, 149)
 """
 Request multiple sensor packets (check [the sensor packet docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=22)).
 
@@ -383,7 +383,7 @@ Format: [149, sensor packet count, sensor packet ID 1, sensor packet ID 2, etc.]
 Available: if the OI is connected.
 Mode change: Doesn't change mode.
 """
-OPCODE_STREAM_SENSORS: bytes = (148).to_bytes(1, "big")
+OPCODE_STREAM_SENSORS: bytes = struct.pack(UNSIGNED_1, 148)
 """
 Request sensor packets every 15ms (check [the sensor packet docs](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=22)).
 Check the [format of the returned data](https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf#page=21).
@@ -392,7 +392,7 @@ Format: [148, sensor packet count, sensor packet ID 1, sensor packet ID 2, etc.]
 Available: if the OI is connected.
 Mode change: Doesn't change mode.
 """
-OPCODE_CHANGE_STREAM_STATUS: bytes = (150).to_bytes(1, "big")
+OPCODE_CHANGE_STREAM_STATUS: bytes = struct.pack(UNSIGNED_1, 150)
 """
 Toggle the stream of sensor packets.
 
