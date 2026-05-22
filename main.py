@@ -146,10 +146,11 @@ def wakeup_thread():
     # Generate a wakeup song made of incrementing tones
     notes = []
     notes_payload = []
+    NOTE_LENGTH_64TH = 16  # a quarter of a second
     for n in range(31, 107, 10):  # maps to 49 Hz to 3951 Hz
         notes.append(n)
         notes_payload.append(n)
-        notes_payload.append(32)
+        notes_payload.append(NOTE_LENGTH_64TH)
 
     # Play wakeup song
     SONG_NUMBER = 0
@@ -157,7 +158,7 @@ def wakeup_thread():
         OPCODE_STORE_SONG + bytes([SONG_NUMBER, len(notes)]) + bytes(notes_payload)
     )
     roomba.write(OPCODE_PLAY_SONG + bytes([SONG_NUMBER]))
-    time.sleep(len(notes) * 32 / 64)
+    time.sleep(len(notes) * NOTE_LENGTH_64TH / 64)
 
     # Pulse the vacuum and brush on and off
     ACTIVATE_MOTORS = MOTORS_VACUUM | MOTORS_MAIN_BRUSH
