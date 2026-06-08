@@ -11,10 +11,10 @@
 
 ## Why so simplistic?
 
-My original project was to fully replace the standard Roomba algorithm with a custom algorithm. But it turned out that, even after trying for weeks, the reinforcement learning framework I used, PufferLib, couldn't vacuum [my virtual rooms](https://github.com/KTibow/puffer) without moving in weird, unclean ways. I ended up cutting my losses and spending the rest of the time I had on
+I'm disappointed about it too. My original project was to fully replace the standard Roomba algorithm with a custom algorithm. But it turned out that, even after trying for weeks, the reinforcement learning framework I used, PufferLib, couldn't vacuum [my virtual rooms](https://github.com/KTibow/puffer) without moving in weird, unclean ways. I ended up cutting my losses and spending the rest of the time I had on:
 
 - cleaning up this MVP to usable state
-- documenting my failure - [I blogged about it some here](https://kendell.dev/blog/rl-verage/), and the Multiagent Snake environment seems to have similar problems (movement that's seemingly random and stupid)
+- documenting my failure - [I blogged about it some here](https://kendell.dev/blog/rl-verage/), and a promising lead is the Multiagent Snake environment (it also happens to have movement that's seemingly random and stupid)
 - making [other tools for the PufferLib community](https://kendell.dev/jsuarez-index/)
 
 I'm still really happy with its obstacle/wall avoidance!
